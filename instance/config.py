@@ -9,6 +9,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
+    SQLALCHEMY_ECHO = True
 
 class ProductionConfig(Config):
     """Development configuration"""
