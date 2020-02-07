@@ -8,7 +8,6 @@ class Config(object):
     """Parent/default configutaion"""
     DEBUG = False
     SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 class DevelopmentConfig(Config):
     """Development configuration"""
