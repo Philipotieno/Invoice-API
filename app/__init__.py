@@ -33,7 +33,7 @@ def create_app(config_name):
                     
                     # Get specific columns and write them on the new csv file
                     writer.writerows(
-                        map(itemgetter(0, 10, 12, 13, 16, 17), reader))
+                        map(itemgetter(0, 10, 12, 13, 16, 17, 18), reader))
                     
                 # Open new file and copy the items to the invoices table
                 with open(new_filename, 'r') as r:
@@ -55,4 +55,10 @@ def create_app(config_name):
         except Exception as e:
             return jsonify({"Error" : str(e)}), 422
 
+    @app.route('/topcustomer', methods=['GET'])
+    def get_top_invoices():
+        invoices = Invoice.get_top_customers()
+        if invoices:
+            return jsonify({'Invoice': invoices}), 200
+        return jsonify({'message': 'No invoices are available!'})
     return app
