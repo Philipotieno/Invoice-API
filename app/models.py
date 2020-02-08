@@ -17,12 +17,12 @@ class Database:
         """ Method to create tables """
         invoices = '''CREATE TABLE IF NOT EXISTS invoices(
                         ContactName VARCHAR NOT NULL,
-                        InvoiceNumber VARCHAR NOT NULL,
-                        InvoiceDate VARCHAR NOT NULL,
-                        DueDate VARCHAR NOT NULL,
+                        InvoiceNumber INT NOT NULL,
+                        InvoiceDate TIMESTAMP NOT NULL,
+                        DueDate TIMESTAMP NOT NULL,
                         Description VARCHAR NOT NULL,
-                        Quantity VARCHAR NOT NULL,
-                        UnitAmount VARCHAR NOT NULL
+                        Quantity INT NOT NULL,
+                        UnitAmount INT NOT NULL
                     );'''
                 
         queries = [invoices]
@@ -41,7 +41,7 @@ class Database:
         
 class Invoice:   
     def __init__(self, ContactName, InvoiceNumber, InvoiceDate, DueDate, Description, Quantity, UnitAmount):
-        """initialize with name."""
+        """invoice constructor"""
         self.ContactName = ContactName
         self.InvoiceNumber = InvoiceNumber
         self.InvoiceDate = InvoiceDate
@@ -49,3 +49,11 @@ class Invoice:
         self.Description = Description
         self.Quantity = Quantity
         self.UnitAmount = UnitAmount
+    
+    @staticmethod
+    def get_top_customers():
+        """ Fetch top customers using unitamount"""
+        query = "SELECT contactname, (quantity*unitamount) as totalamountdue from invoices ORDER BY unitamount DESC LIMIT 5;"
+        cur.execute(query)
+        invoices = cur.fetchall()
+        return invoices
