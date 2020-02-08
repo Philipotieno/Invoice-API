@@ -1,13 +1,14 @@
-from flask import Flask
-# from flask_sqlalchemy import SQLAlchemy
-import pandas as pd
 import csv
-from instance.config import app_config
+from operator import itemgetter
+
+from flask import Flask, abort, jsonify
 
 from app.models import Database, Invoice
+from instance.config import app_config
 
 db = Database()
 cur = db.cur
+
 
 def create_app(config_name):
     """
@@ -16,17 +17,42 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
- 
+
     @app.route('/upload', methods=['POST'])
     def upload_data():
-        file = request.files['file']
-        csv_file_path = 'SalesInvoiceTemplate.csv'
-        with open(csv_file_path, 'r') as f:
-            cmd = 'COPY invoices FROM STDIN CSV HEADER'
-            print(type(cmd))
-            cur.copy_expert(cmd, f)
-            db.conn.commit()
+        try:
+            filename = 'SalesInvoiceTemplate.csv'
+            new_filename = 'NewSalesInvoiceTemplate.csv'
             
-        return "Success"
+            with open(filename, 'r') as f:
+                
+                # creating a csv reader object
+                reader = csv.reader(f)
+                with open(new_filename, 'w') as output_file:
+                    writer = csv.writer(output_file, delimiter=',')
+                    
+                    # Get specific columns and write them on the new csv file
+                    writer.writerows(
+                        map(itemgetter(0, 10, 12, 13, 16, 17, 18), reader))
+                    
+                    # Open new file and copy the items to the invoices table
+                    with open(new_filename, 'r') as f:
+                        reader = csv.reader(f)
+                        next(reader)
+                        cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER FALSE)"
+                        cur.copy_expert(cmd, f)
+                        
+                        # Covert the csv file into a dictionary
+                        dictreader = csv.reader(open(new_filename))
+                        result = {}
+                        for row in dictreader:
+                            result[row[0]]=row[1:]
+                        
+            return jsonify({
+                'success': True,
+                'invoice': result
+                }), 201
+        except:
+            abort(422)
 
     return app
