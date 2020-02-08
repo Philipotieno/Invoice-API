@@ -18,7 +18,7 @@ def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
 
-    @app.route('/upload', methods=['POST'])
+    @app.route('/invoices', methods=['POST'])
     def upload_data():
         try:
             filename = 'SalesInvoiceTemplate.csv'
@@ -55,10 +55,14 @@ def create_app(config_name):
         except Exception as e:
             return jsonify({"Error" : str(e)}), 422
 
-    @app.route('/topcustomer', methods=['GET'])
+    @app.route('/invoices/', methods=['GET'])
     def get_top_invoices():
         invoices = Invoice.get_top_customers()
         if invoices:
-            return jsonify({'Invoice': invoices}), 200
-        return jsonify({'message': 'No invoices are available!'})
+            return jsonify({
+                'Invoice': invoices,
+                'total' :len(invoices)
+                }), 200
+        return jsonify({'message': 'No invoices are available!'}), 404
+    
     return app
