@@ -38,9 +38,9 @@ def create_app(config_name):
                     # Open new file and copy the items to the invoices table
                     with open(new_filename, 'r') as f:
                         reader = csv.reader(f)
-                        next(reader)
-                        cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER FALSE)"
+                        cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER FALSE, QUOTE E'\b')"
                         cur.copy_expert(cmd, f)
+                        db.conn.commit()
                         
                         # Covert the csv file into a dictionary
                         dictreader = csv.reader(open(new_filename))

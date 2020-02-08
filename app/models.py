@@ -16,35 +16,13 @@ class Database:
     def create_tables(self):
         """ Method to create tables """
         invoices = '''CREATE TABLE IF NOT EXISTS invoices(
-                        ContactName VARCHAR,
-                        InvoiceNumber INT,
-                        InvoiceDate TIMESTAMP,
-                        DueDate TIMESTAMP,
-                        Description VARCHAR,
-                        Quantity INT,
-                        UnitAmount INT,
-                        EmailAddress VARCHAR,
-                        POAddressLine1 VARCHAR,
-                        POAddressLine2 VARCHAR,
-                        POAddressLine3 VARCHAR,
-                        POAddressLine24 VARCHAR,
-                        POCity VARCHAR,
-                        PORegion VARCHAR,
-                        POPostalCode INT,
-                        POCountry VARCHAR,
-                        Reference VARCHAR,
-                        Total INT,
-                        InventoryItemCode INT NULL,
-                        Discount INT,
-                        AccountCode INT,
-                        TaxType VARCHAR,
-                        TaxAmount INT,
-                        TrackingName1 VARCHAR,
-                        TrackingOption1 VARCHAR,
-                        TrackingName2 VARCHAR,
-                        TrackingOption2 VARCHAR,
-                        Currency VARCHAR,
-                        BrandingTheme VARCHAR
+                        ContactName VARCHAR NOT NULL,
+                        InvoiceNumber VARCHAR NOT NULL,
+                        InvoiceDate VARCHAR NOT NULL,
+                        DueDate VARCHAR NOT NULL,
+                        Description VARCHAR NOT NULL,
+                        Quantity VARCHAR NOT NULL,
+                        UnitAmount VARCHAR NOT NULL
                     );'''
                 
         queries = [invoices]
