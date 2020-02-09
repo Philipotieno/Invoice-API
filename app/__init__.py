@@ -85,4 +85,14 @@ def create_app(config_name):
             "message": "wrong date format"
         })
 
+    @app.route('/invoices/summary', methods=['GET'])
+    def get_summary():
+        invoices = Invoice.get_summary()
+        if invoices:
+            return jsonify({
+                'Invoice': invoices,
+                'total': len(invoices)
+            }), 200
+        return jsonify({'message': 'No invoices are available!'}), 404
+
     return app
