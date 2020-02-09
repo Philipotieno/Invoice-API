@@ -70,11 +70,7 @@ def create_app(config_name):
         data = request.get_json()['date']
 
         if datetime.datetime.strptime(data, '%Y-%m-%d'):
-            query = "SELECT contactname, duedate,\
-                    (quantity*unitamount) as totalamountdue from invoices\
-                    WHERE duedate > '{}' ORDER BY duedate DESC LIMIT 30;".format(data)
-            cur.execute(query)
-            invoices = cur.fetchall()
+            invoices = Invoice.transactions_query(data)
             if invoices:
                 return jsonify({
                     'Invoice': invoices,
