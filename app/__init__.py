@@ -1,9 +1,11 @@
 import csv
-from operator import itemgetter
 import datetime
+from operator import itemgetter
+
 from flask import Flask, abort, jsonify, request
 
 from app.models import Database, Invoice
+from flask_cors import CORS
 from instance.config import app_config
 
 db = Database()
@@ -17,6 +19,7 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
+    CORS(app)
 
     @app.route('/invoices', methods=['POST'])
     def upload_data():
@@ -56,6 +59,7 @@ def create_app(config_name):
             return jsonify({"Error": str(e)}), 422
 
     @app.route('/invoices', methods=['GET'])
+    # gets top 5 invoices 
     def get_top_invoices():
         invoices = Invoice.get_top_customers()
         if invoices:
