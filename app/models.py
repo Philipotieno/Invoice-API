@@ -1,8 +1,7 @@
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-# from dotenv import load_dotenv
-# load_dotenv()
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -26,18 +25,10 @@ class Database:
                         Quantity INT NOT NULL,
                         UnitAmount INT NOT NULL
                     );'''
-        my_query = '''ALTER DATABASE df5slo931qhsbt SET datestyle TO "ISO, MDY";
-        '''
         queries = [invoices]
         for q in queries:
             self.cur.execute(q)
             self.conn.commit()
-        self.cur.execute(my_query)
-        self.conn.commit()
-        self.cur.execute("ROLLBACK")
-        self.conn.commit()
-        self.conn.close()
-
         print("All tables created successfully!")
 
     def drop_tables(self):
@@ -94,3 +85,4 @@ class Invoice:
         invoices = cur.fetchall()
 
         return invoices
+        
