@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "ac1a72eb-5226-4670-9567-69c3131b6f7d",
+		"name": "Invoice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "invoices/",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/mitch/projects/Invoice-API/SalesInvoiceTemplate.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/invoices",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/invoices/topcustomers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}invoices/topcustomers",
+					"host": [
+						"{{host}}invoices"
+					],
+					"path": [
+						"topcustomers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/invoices/transactions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"date\" : \"2020-2-1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}invoices/transactions",
+					"host": [
+						"{{host}}invoices"
+					],
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "invoices/summary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/invoices/summary",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"invoices",
+						"summary"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "3ea24430-d778-4e08-b006-c7b8fbd4eb8e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c41525bf-06c9-4c50-9146-3c34d1ff5fa2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "0731855c-ff6d-4d2a-9d6a-b02fb26fa5c4",
+			"key": "host",
+			"value": "https://philip-invoice.herokuapp.com/",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
