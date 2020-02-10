@@ -45,8 +45,10 @@
 ## Endpoints...
 ```
     localhost:5000
-    heroku: https://capstone-philip.herokuapp.com/
+    heroku link: [https://philip-invoice.herokuapp.com/][https://philip-invoice.herokuapp.com]
 ```
+### To teat the endpoints with the heroku link
+- Import the postman collection and test the following endpoints
 ### POST '/invoices'
 
 - Upload a new csv file and read data
