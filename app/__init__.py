@@ -15,8 +15,10 @@ cur = db.cur
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
+
 def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def create_app(config_name):
     """
@@ -25,18 +27,16 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
-    app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
     CORS(app)
 
-
-    @app.route('/', methods=['POST'])
-    def upload_file():
+    @app.route('/upload', methods=['POST'])
+    def upload_file_data():
         # check if the post request has the file part
         if 'file' not in request.files:
             msg = jsonify({
-                    'error': 'No file part'
-                }), 409
+                'error': 'No file part'
+            }), 409
         file = request.files['file']
         if file.filename == '':
             msg = jsonify({
@@ -44,10 +44,37 @@ def create_app(config_name):
             }), 409
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            msg = jsonify({
-                'success' : 'File successfully uploaded'
-            })
+            try:
+                new_filename = 'NewSalesInvoiceTemplate.csv'
+                with open(filename, 'r') as f:
+                    # creating a csv reader object
+                    reader = csv.reader(f)
+                    with open(new_filename, 'w') as output_file:
+                        writer = csv.writer(output_file, delimiter=',')
+
+                        # Get specific columns and write them on the new csv file
+                        writer.writerows(
+                            map(itemgetter(0, 10, 12, 13, 16, 17, 18), reader))
+
+                    # Open new file and copy the items to the invoices table
+                    with open(new_filename, 'r') as r:
+                        reader = csv.reader(r)
+                        cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"
+                        cur.copy_expert(cmd, r)
+                        db.conn.commit()
+
+                    # Covert the csv file into a dictionary
+                    dictreader = csv.reader(open(new_filename))
+                    result = {}
+                    for row in dictreader:
+                        result[row[0]] = row[1:]
+
+                    return jsonify({
+                        'success': 'File successfully uploaded',
+                        'invoice': result
+                    }), 201
+            except Exception as e:
+                return jsonify({"Error": str(e)}), 422
         else:
             msg = jsonify({
                 'error': 'Allowed file types is csv only'
@@ -55,46 +82,8 @@ def create_app(config_name):
 
         return msg
 
-    @app.route('/invoices', methods=['POST'])
-    def upload_data():
-        file = request.files['filename']
-        try:
-            filename = 'SalesInvoiceTemplate.csv'
-            new_filename = 'NewSalesInvoiceTemplate.csv'
-
-            with open(filename, 'r') as f:
-
-                # creating a csv reader object
-                reader = csv.reader(f)
-                with open(new_filename, 'w') as output_file:
-                    writer = csv.writer(output_file, delimiter=',')
-
-                    # Get specific columns and write them on the new csv file
-                    writer.writerows(
-                        map(itemgetter(0, 10, 12, 13, 16, 17, 18), reader))
-
-                # Open new file and copy the items to the invoices table
-                with open(new_filename, 'r') as r:
-                    reader = csv.reader(r)
-                    cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"
-                    cur.copy_expert(cmd, r)
-                    db.conn.commit()
-
-                # Covert the csv file into a dictionary
-                dictreader = csv.reader(open(new_filename))
-                result = {}
-                for row in dictreader:
-                    result[row[0]] = row[1:]
-
-                return jsonify({
-                    'success': True,
-                    'invoice': result
-                }), 201
-        except Exception as e:
-            return jsonify({"Error": str(e)}), 422
-
     @app.route('/invoices', methods=['GET'])
-    # gets top 5 invoices 
+    # gets top 5 invoices
     def get_top_invoices():
         invoices = Invoice.get_top_customers()
         if invoices:
