@@ -1,8 +1,10 @@
+import os
 import csv
 import datetime
 from operator import itemgetter
 
 from flask import Flask, abort, jsonify, request
+from werkzeug.utils import secure_filename
 
 from app.models import Database, Invoice
 from flask_cors import CORS
@@ -11,6 +13,10 @@ from instance.config import app_config
 db = Database()
 cur = db.cur
 
+ALLOWED_EXTENSIONS = set(['csv'])
+
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def create_app(config_name):
     """
@@ -19,10 +25,39 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
+    app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
     CORS(app)
+
+
+    @app.route('/', methods=['POST'])
+    def upload_file():
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            msg = jsonify({
+                    'error': 'No file part'
+                }), 409
+        file = request.files['file']
+        if file.filename == '':
+            msg = jsonify({
+                'error': 'No file selected for uploading'
+            }), 409
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            msg = jsonify({
+                'success' : 'File successfully uploaded'
+            })
+        else:
+            msg = jsonify({
+                'error': 'Allowed file types is csv only'
+            }), 422
+
+        return msg
 
     @app.route('/invoices', methods=['POST'])
     def upload_data():
+        file = request.files['filename']
         try:
             filename = 'SalesInvoiceTemplate.csv'
             new_filename = 'NewSalesInvoiceTemplate.csv'
