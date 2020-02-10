@@ -52,27 +52,32 @@
 - Upload a new csv file and read data
 - CSV must have all the headers required for a succesfull upload
 
-
-![Uploadbody](https://github.com/Philipotieno/Invoice-API/images/upload.png)
+- Body
+![Uploadbody](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images//upload.png)
  
-![Returns](https://github.com/Philipotieno/Invoice-API/images/returnsupload.png)
+- Returns
+![Returns](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images/returnsupload.png)
 
 ### GET '/invoices/topcustomers'
 
 - Gets invoices of top five customers acording to the amount due
-
-![Returns](https://github.com/Philipotieno/Invoice-API/images/topcustomers.png)
+- Returns
+![Returns](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images/topcustomers.png)
 
 ### GET '/invoices/transactions'
 - This route returns the last 30 transactions
 - Date must be of the formt %Y-%m-%d
 
-![dateBody](https://github.com/Philipotieno/Invoice-API/images/transactions.png)
+- Body
+![dateBody](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images/transactions.png)
 
-### GET '/invoices/transactions'
+- Returns
+![returns transactions](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images/transactions.png)
+### GET '/invoices/summary'
 - This route returns a summary of total amount incurred for each month in every year
 
-![Returns](https://github.com/Philipotieno/Invoice-API/images/summary.png)
+- Returns
+![Returns](https://github.com/Philipotieno/Invoice-API/blob/upload-invoice-csv/images/summary.png)
 
 
 - To drop tables  :
