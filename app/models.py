@@ -53,10 +53,10 @@ class Invoice:
 
     @staticmethod
     def get_top_customers():
-        """ Fetch top customers using unitamount"""
+        """ gets top five customers using according to the unitamount"""
         query = "SELECT contactname,\
                 (quantity*unitamount) as totalamountdue from invoices\
-                ORDER BY unitamount DESC LIMIT 5;"
+                ORDER BY totalamountdue DESC LIMIT 5;"
         cur.execute(query)
         invoices = cur.fetchall()
 
@@ -64,7 +64,7 @@ class Invoice:
     
     @staticmethod
     def get_summary():
-        """ Fetch invoice summary"""
+        """ gets invoice summary for the whole period of time"""
         query = "SELECT date_part('year', duedate) AS year, date_part('month', duedate) AS month,\
                 SUM(quantity*unitamount) as totalamountdue from invoices\
                 GROUP BY year, month ORDER BY year, month;"
@@ -77,7 +77,7 @@ class Invoice:
 
     @staticmethod
     def transactions_query(data):
-        """ get lastt 30 transactions """
+        """ gets last 30 transactions """
         query = "SELECT duedate,\
             (quantity*unitamount) as totalamountdue from invoices\
             WHERE duedate < '{}' ORDER BY duedate DESC LIMIT 30;".format(data)
@@ -85,4 +85,3 @@ class Invoice:
         invoices = cur.fetchall()
 
         return invoices
-        
