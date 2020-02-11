@@ -68,7 +68,6 @@ class Invoice:
         query = "SELECT date_part('year', duedate) AS year, date_part('month', duedate) AS month,\
                 SUM(quantity*unitamount) as totalamountdue from invoices\
                 GROUP BY year, month ORDER BY year, month;"
-
         cur.execute(query)
         invoices = cur.fetchall()
 
@@ -85,3 +84,12 @@ class Invoice:
         invoices = cur.fetchall()
 
         return invoices
+
+    @staticmethod
+    def check_data():
+        """ checks if data exists """
+        query = "SELECT contactname from invoices;"
+        cur.execute(query)
+        contactnames = cur.fetchall()
+
+        return contactnames

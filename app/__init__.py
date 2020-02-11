@@ -77,26 +77,32 @@ def create_app(config_name):
                             map(itemgetter(0, 10, 12, 13, 16, 17, 18), reader))
 
                 # Open new file and copy the items to the invoices table
-                with open(new_filename2, 'r') as r:
-                    reader = csv.reader(r)
-                    cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"
-                    cur.copy_expert(cmd, r)
-                    db.conn.commit()
+                contactnames = Invoice.check_data()
+                if len(contactnames) == 0:
+                    with open(new_filename2, 'r') as r:
+                        reader = csv.reader(r)
+                        cmd = "COPY invoices FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"
+                        cur.copy_expert(cmd, r)
+                        db.conn.commit()
 
-                    # Covert the csv file into a dictionary
-                    dictreader = csv.reader(open(new_filename2))
-                    result = {}
-                    for row in dictreader:
-                        result[row[0]] = row[1:]
-                    os.remove(new_filename)
-                    os.remove(new_filename2)
+                        # Covert the csv file into a dictionary
+                        dictreader = csv.reader(open(new_filename2))
+                        result = {}
+                        for row in dictreader:
+                            result[row[0]] = row[1:]
+                        os.remove(new_filename)
+                        os.remove(new_filename2)
 
-                    return jsonify({
-                        'success': 'File successfully uploaded',
-                        'invoice': result
-                    }), 201
+                        msg = jsonify({
+                            'success': 'File successfully uploaded',
+                            'invoice': result
+                        }), 201
+                else:
+                    msg = jsonify({
+                        'message' : 'data upto date'
+                        })
             except Exception as e:
-                return jsonify({"Error": str(e)}), 422
+                msg = jsonify({"Error": str(e)}), 422
         else:
             msg = jsonify({
                 'error': 'Allowed file types is csv only'
