@@ -1,10 +1,13 @@
+"""
+Contains general settings for environments to have by default
+"""
 import os
 
 #config.py
 class Config(object):
-	"""Parent/default configutaion"""
-	DEBUG = False
-	SECRET_KEY = os.getenv('SECRET_KEY')
+    """Parent/default configutaion"""
+    DEBUG = False
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 class DevelopmentConfig(Config):
     """Development configuration"""
